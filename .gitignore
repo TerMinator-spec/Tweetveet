@@ -1,0 +1,36 @@
+# Environments
+.env
+.env.*
+.venv
+env/
+venv/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+.cursor/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs and Testing
+logs/
+*.log
+.pytest_cache/
+htmlcov/
+.coverage
+.tox/
+
+# Local databases (if any)
+*.sqlite3
+db.sqlite3

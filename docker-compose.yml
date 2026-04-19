@@ -1,0 +1,108 @@
+# ================================================
+# TweetVeet — Docker Compose
+# ================================================
+
+version: "3.9"
+
+services:
+  # --- PostgreSQL Database ---
+  postgres:
+    image: postgres:16-alpine
+    container_name: tweetveet-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tweetveet
+      POSTGRES_USER: tweetveet
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tweetveet"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- Redis ---
+  redis:
+    image: redis:7-alpine
+    container_name: tweetveet-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- FastAPI Server ---
+  api:
+    build:
+      context: .
+      target: api
+    container_name: tweetveet-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://tweetveet:${DB_PASSWORD:-password}@postgres:5432/tweetveet
+      DATABASE_URL_SYNC: postgresql://tweetveet:${DB_PASSWORD:-password}@postgres:5432/tweetveet
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # --- Celery Worker ---
+  worker:
+    build:
+      context: .
+      target: worker
+    container_name: tweetveet-worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://tweetveet:${DB_PASSWORD:-password}@postgres:5432/tweetveet
+      DATABASE_URL_SYNC: postgresql://tweetveet:${DB_PASSWORD:-password}@postgres:5432/tweetveet
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # --- Celery Beat Scheduler ---
+  beat:
+    build:
+      context: .
+      target: beat
+    container_name: tweetveet-beat
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://tweetveet:${DB_PASSWORD:-password}@postgres:5432/tweetveet
+      DATABASE_URL_SYNC: postgresql://tweetveet:${DB_PASSWORD:-password}@postgres:5432/tweetveet
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
