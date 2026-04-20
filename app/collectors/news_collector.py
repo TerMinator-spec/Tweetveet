@@ -112,7 +112,7 @@ class NewsCollector(BaseCollector):
                 continue
             try:
                 pub_date = datetime.fromisoformat(pub_raw.replace("Z", "+00:00"))
-                if (now - pub_date).total_seconds() <= 86400:
+                if (now - pub_date).total_seconds() <= 21600:  # 6 hours
                     recent_articles.append(item)
             except Exception:
                 pass
