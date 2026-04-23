@@ -40,13 +40,13 @@ celery_app.conf.update(
 celery_app.conf.beat_schedule = {
     "collect-and-post": {
         "task": "app.scheduler.tasks.collect_and_post",
-        # 14:30 UTC is exactly 8:00 PM IST (India Standard Time)
-        "schedule": crontab(minute=30, hour=14),
+        # 9:45 PM IST (16:15 UTC) and 11:45 PM IST (18:15 UTC)
+        "schedule": crontab(minute=15, hour="16,18"),
     },
     "engagement-cycle": {
         "task": "app.scheduler.tasks.run_engagement",
-        # Also run engagement once daily at 8:15 PM IST (14:45 UTC) to follow the main posting
-        "schedule": crontab(minute=45, hour=14),
+        # 10:00 PM IST (16:30 UTC) and 12:00 AM IST (18:30 UTC)
+        "schedule": crontab(minute=30, hour="16,18"),
     },
 }
 
