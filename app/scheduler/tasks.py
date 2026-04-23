@@ -119,7 +119,15 @@ async def _pipeline():
 
         # Step 3: Generate tweets for top sources (sorted by engagement)
         new_sources.sort(key=lambda s: s.engagement_score, reverse=True)
-        sources_to_tweet = new_sources[:settings.max_tweets_per_hour]
+        
+        # Always prioritize all CricAPI live match sources, bypassing generic hourly limits
+        sources_to_tweet = [s for s in new_sources if s.author == "CricAPI"]
+        
+        other_count = 0
+        for s in new_sources:
+            if s.author != "CricAPI" and other_count < settings.max_tweets_per_hour:
+                sources_to_tweet.append(s)
+                other_count += 1
 
         posted_count = 0
 
@@ -196,9 +204,14 @@ async def _pipeline():
                         extra={
                             "tweet_id": result["tweet_id"],
                             "style": best["style"],
-                            "source": source.source_type,
+                            "source_type": source.source_type,
+                            "author": source.author,
                         },
                     )
+                    
+                    # Delay to avoid anti-spam limits when multiple tweets are posted sequentially
+                    import asyncio
+                    await asyncio.sleep(5)
 
             except Exception as e:
                 logger.error(f"Pipeline error for source {source.id}: {e}")

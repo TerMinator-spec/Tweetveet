@@ -37,6 +37,11 @@ class Settings(BaseSettings):
     # --- News APIs ---
     newsapi_key: str = Field(default="", description="NewsAPI.org API key")
     gnews_api_key: str = Field(default="", description="GNews API key")
+    cricdata_api_key: str = Field(default="", description="Cricdata (cricapi.com) API key")
+    espncricinfo_rss_url: str = Field(
+        default="https://www.espncricinfo.com/rss/content/story/feeds/0.xml",
+        description="ESPN Cricinfo RSS feed URL"
+    )
 
     # --- Unsplash ---
     unsplash_access_key: str = Field(default="", description="Unsplash API key (fallback images)")

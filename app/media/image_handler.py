@@ -56,47 +56,47 @@ async def _download_image(url: str, filename: str) -> Optional[str]:
         return None
 
 
-async def _fetch_from_unsplash(query: str) -> Optional[str]:
-    """Search Unsplash for a cricket-related image.
+# async def _fetch_from_unsplash(query: str) -> Optional[str]:
+#     """Search Unsplash for a cricket-related image.
 
-    Args:
-        query: Search keywords (e.g., "Kohli cricket").
+#     Args:
+#         query: Search keywords (e.g., "Kohli cricket").
 
-    Returns:
-        Image URL or None.
-    """
-    if not settings.unsplash_access_key:
-        logger.debug("Unsplash key not configured — skipping")
-        return None
+#     Returns:
+#         Image URL or None.
+#     """
+#     if not settings.unsplash_access_key:
+#         logger.debug("Unsplash key not configured — skipping")
+#         return None
 
-    url = "https://api.unsplash.com/search/photos"
-    params = {
-        "query": f"{query} cricket",
-        "per_page": 5,
-        "orientation": "landscape",
-        "content_filter": "high",
-    }
-    headers = {"Authorization": f"Client-ID {settings.unsplash_access_key}"}
+#     url = "https://api.unsplash.com/search/photos"
+#     params = {
+#         "query": f"{query} cricket",
+#         "per_page": 5,
+#         "orientation": "landscape",
+#         "content_filter": "high",
+#     }
+#     headers = {"Authorization": f"Client-ID {settings.unsplash_access_key}"}
 
-    try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.get(url, headers=headers, params=params)
-            response.raise_for_status()
-            data = response.json()
+#     try:
+#         async with httpx.AsyncClient(timeout=10.0) as client:
+#             response = await client.get(url, headers=headers, params=params)
+#             response.raise_for_status()
+#             data = response.json()
 
-        results = data.get("results", [])
-        if results:
-            # Pick the first result's regular-size URL
-            image_url = results[0]["urls"].get("regular")
-            logger.info("Found Unsplash image", extra={"query": query})
-            return image_url
+#         results = data.get("results", [])
+#         if results:
+#             # Pick the first result's regular-size URL
+#             image_url = results[0]["urls"].get("regular")
+#             logger.info("Found Unsplash image", extra={"query": query})
+#             return image_url
 
-        logger.debug("No Unsplash results", extra={"query": query})
-        return None
+#         logger.debug("No Unsplash results", extra={"query": query})
+#         return None
 
-    except Exception as e:
-        logger.error(f"Unsplash search failed: {e}")
-        return None
+#     except Exception as e:
+#         logger.error(f"Unsplash search failed: {e}")
+#         return None
 
 
 async def get_image_for_tweet(
@@ -126,14 +126,9 @@ async def get_image_for_tweet(
         local_path = await _download_image(source_media_url, "source_media.jpg")
         if local_path:
             return local_path
-        logger.warning("Source media download failed — trying Unsplash fallback")
-
-    # Priority 3: Unsplash fallback
-    unsplash_url = await _fetch_from_unsplash(keywords)
-    if unsplash_url:
-        local_path = await _download_image(unsplash_url, "unsplash_media.jpg")
-        if local_path:
-            return local_path
+    # Unsplash fallback removed as per user request.
+    # If source media fails, we post without image.
+    pass
 
     logger.info("No image available for tweet")
     return None

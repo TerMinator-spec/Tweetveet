@@ -23,6 +23,7 @@ tweepy==4.14.0
 tenacity==9.0.0
 python-dotenv==1.0.1
 simhash==2.1.2
+feedparser==6.0.11
 
 # Logging
 python-json-logger==3.2.1
