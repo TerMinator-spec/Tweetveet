@@ -133,7 +133,7 @@ async def _pipeline():
 
         for source in sources_to_tweet:
             try:
-                # Generate 3 variants
+                # Generate 4 variants
                 variants = await generate_tweet_variants(
                     source.title,
                     source.body or "",

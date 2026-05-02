@@ -64,7 +64,7 @@ async def generate_tweet_variants(
     body: str = "",
     item_time: Optional[datetime.datetime] = None,
 ) -> list[dict[str, Any]]:
-    """Generate 3 tweet style variations using OpenAI.
+    """Generate 4 tweet style variations using OpenAI.
 
     Args:
         title: Cricket news headline.

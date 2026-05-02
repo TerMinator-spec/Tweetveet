@@ -26,6 +26,7 @@ class TweetStyle(str, enum.Enum):
     HYPE = "hype"
     ANALYTICAL = "analytical"
     CASUAL = "casual"
+    DEBATE = "debate"
 
 
 class CricketSource(Base):
