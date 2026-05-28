@@ -300,7 +300,7 @@ class NewsCollector(BaseCollector):
                 
                 # For Cricdata, publishedAt is the match START time. A match could easily end 5-10 hours 
                 # after it starts, so we need a larger age window (24 hrs) for Cricdata items to catch recently ended matches.
-                max_age = 86400 if item.get("_source") == "cricdata" else 43200
+                max_age = 172800
                 
                 if (now - pub_date).total_seconds() <= max_age:
                     recent_articles.append(item)

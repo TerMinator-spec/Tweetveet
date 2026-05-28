@@ -41,12 +41,12 @@ celery_app.conf.beat_schedule = {
     "collect-and-post": {
         "task": "app.scheduler.tasks.collect_and_post",
         # 9:45 PM IST (16:15 UTC) and 11:45 PM IST (18:15 UTC)
-        "schedule": crontab(minute=15, hour="16,18"),
+        "schedule": crontab(minute=15, hour="10,4"),
     },
     "engagement-cycle": {
         "task": "app.scheduler.tasks.run_engagement",
         # 10:00 PM IST (16:30 UTC) and 12:00 AM IST (18:30 UTC)
-        "schedule": crontab(minute=30, hour="16,18"),
+        "schedule": crontab(minute=30, hour="10,4"),
     },
 }
 
